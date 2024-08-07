@@ -1,25 +1,37 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import LoginForm from './LoginForm';
+import LogoutButton from './LogoutButton';
 import './App.css';
+import AuthActions from './AuthActions';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const { isAuthenticated } = AuthActions();
+    const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            setShowWelcomeMessage(true);
+            const timer = setTimeout(() => {
+                setShowWelcomeMessage(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        } else {
+            setShowWelcomeMessage(false);
+        }
+    }, [isAuthenticated]);
+
+    return (
+        <div>
+            {isAuthenticated ? (
+                <>
+                    <LogoutButton />
+                    {showWelcomeMessage && <p className="success">Welcome back! You are logged in.</p>}
+                </>
+            ) : (
+                <LoginForm />
+            )}
+        </div>
+    );
+};
 
 export default App;
